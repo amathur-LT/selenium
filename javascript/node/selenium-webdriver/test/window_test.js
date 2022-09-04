@@ -21,6 +21,7 @@ const assert = require('assert')
 const test = require('../lib/test')
 const { By } = require('..')
 const { UnknownCommandError } = require('../lib/error')
+const {Browser} = require("../index");
 
 test.suite(function (env) {
   let driver
@@ -90,18 +91,19 @@ test.suite(function (env) {
     await driver.wait(forPositionToBe(newX, newY), 1000)
   })
 
-  it('can set the window position from a frame', async function () {
-    await driver.get(test.Pages.iframePage)
+  .ignore(env.browsers(Browser.FIREFOX))
+    .it('can set the window position from a frame', async function () {
+      await driver.get(test.Pages.iframePage)
 
-    let frame = await driver.findElement(By.name('iframe1-name'))
-    await driver.switchTo().frame(frame)
+      let frame = await driver.findElement(By.name('iframe1-name'))
+      await driver.switchTo().frame(frame)
 
-    let { x, y } = await driver.manage().window().getRect()
-    x += 10
-    y += 10
+      let { x, y } = await driver.manage().window().getRect()
+      x += 10
+      y += 10
 
-    await driver.manage().window().setRect({ width: 640, height: 480, x, y })
-    await driver.wait(forPositionToBe(x, y), 1000)
+      await driver.manage().window().setRect({ width: 640, height: 480, x, y })
+      await driver.wait(forPositionToBe(x, y), 1000)
   })
 
   it('can open a new window', async function () {
