@@ -23,6 +23,9 @@ module Selenium
   module WebDriver
     module Support
       describe Select do
+        let(:select) { Select.new(driver.find_element(name: 'selectomatic')) }
+        let(:multi_select) { Select.new(driver.find_element(id: 'multi')) }
+        let(:multi_disabled) { Select.new(driver.find_element(name: 'multi_disabled')) }
 
         before { driver.navigate.to url_for('formPage.html') }
 
@@ -53,7 +56,7 @@ module Selenium
           it 'lists all' do
             select = Select.new(driver.find_element(name: 'selectomatic'))
             options = select.options
-            expect(options.size).to eq 4
+            expect(options.size).to eq 5
             expect(options).to include(driver.find_element(id: 'non_multi_option'))
           end
         end
@@ -85,8 +88,6 @@ module Selenium
           end
 
           context 'when multiple select' do
-            let(:multi_select) { Select.new(driver.find_element(id: 'multi')) }
-
             context 'when by text' do
               it 'already selected stays selected' do
                 multi_select.select_by(:text, 'Sausages')
@@ -112,6 +113,12 @@ module Selenium
                 expect(selected_options).to include(driver.find_element(css: 'option[value="onion gravy"]'))
               end
 
+              it 'errors when option disabled' do
+                expect {
+                  multi_disabled.select_by(:text, 'Disabled')
+                }.to raise_exception(Error::UnsupportedOperationError)
+              end
+
               it 'errors when not found' do
                 expect { multi_select.select_by(:text, 'invalid') }.to raise_exception(Error::NoSuchElementError)
               end
@@ -132,6 +139,10 @@ module Selenium
 
                 expect(selected_options.size).to eq 3
                 expect(selected_options).to include(driver.find_element(css: 'option[value=ham]'))
+              end
+
+              it 'errors when option disabled' do
+                expect { multi_disabled.select_by(:index, 1) }.to raise_exception(Error::UnsupportedOperationError)
               end
 
               it 'errors when not found' do
@@ -156,6 +167,12 @@ module Selenium
                 expect(selected_options).to include(driver.find_element(css: 'option[value=ham]'))
               end
 
+              it 'errors when option disabled' do
+                expect {
+                  multi_disabled.select_by(:value, 'disabled')
+                }.to raise_exception(Error::UnsupportedOperationError)
+              end
+
               it 'errors when not found' do
                 expect { multi_select.select_by(:value, 'invalid') }.to raise_exception(Error::NoSuchElementError)
               end
@@ -163,8 +180,6 @@ module Selenium
           end
 
           context 'when single select' do
-            let(:select) { Select.new(driver.find_element(name: 'selectomatic')) }
-
             context 'when by text' do
               it 'already selected stays selected' do
                 select.select_by(:text, 'One')
@@ -184,6 +199,10 @@ module Selenium
                 select.select_by(:text, 'Still learning how to count, apparently')
                 expected_option = driver.find_element(css: 'option[value="still learning how to count, apparently"]')
                 expect(select.selected_options).to eq([expected_option])
+              end
+
+              it 'errors when option disabled' do
+                expect { select.select_by(:text, 'Five') }.to raise_exception(Error::UnsupportedOperationError)
               end
 
               it 'errors when not found' do
@@ -206,8 +225,12 @@ module Selenium
                 expect(selected_options).to eq([driver.find_element(css: 'option[value="two"]')])
               end
 
+              it 'errors when option disabled' do
+                expect { select.select_by(:index, 3) }.to raise_exception(Error::UnsupportedOperationError)
+              end
+
               it 'errors when not found' do
-                expect { select.select_by(:index, 4) }.to raise_exception(Error::NoSuchElementError)
+                expect { select.select_by(:index, 5) }.to raise_exception(Error::NoSuchElementError)
               end
             end
 
@@ -226,6 +249,10 @@ module Selenium
                 expect(selected_options).to eq([driver.find_element(css: 'option[value="two"]')])
               end
 
+              it 'errors when option disabled' do
+                expect { select.select_by(:value, 'five') }.to raise_exception(Error::UnsupportedOperationError)
+              end
+
               it 'errors when not found' do
                 expect { select.select_by(:value, 'invalid') }.to raise_exception(Error::NoSuchElementError)
               end
@@ -234,8 +261,6 @@ module Selenium
         end
 
         describe '#deselect_by' do
-          let(:multi_select) { Select.new(driver.find_element(id: 'multi')) }
-
           it 'invalid how raises exception' do
             expect { multi_select.deselect_by(:invalid, 'foo') }.to raise_exception(ArgumentError)
           end
@@ -320,6 +345,12 @@ module Selenium
             expect { select.select_all }.to raise_exception(Error::UnsupportedOperationError)
           end
 
+          it 'raises exception if select contains disabled options' do
+            select = Select.new(driver.find_element(name: 'multi_disabled'))
+
+            expect { select.select_all }.to raise_exception(Error::UnsupportedOperationError)
+          end
+
           it 'selects all options' do
             multi_select = Select.new(driver.find_element(id: 'multi'))
             multi_select.select_all
@@ -335,6 +366,12 @@ module Selenium
             select = Select.new(driver.find_element(name: 'selectomatic'))
 
             expect { select.deselect_all }.to raise_exception(Error::UnsupportedOperationError)
+          end
+
+          it 'does not error when select contains disabled options' do
+            select = Select.new(driver.find_element(name: 'multi_disabled'))
+
+            expect { select.deselect_all }.not_to raise_exception
           end
 
           it 'deselects all options' do
