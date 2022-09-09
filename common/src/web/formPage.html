@@ -33,6 +33,7 @@ There should be a form here:
         <option selected="selected" id="non_multi_option" value="one">One</option>
         <option value="two">Two</option>
         <option value="four">Four</option>
+        <option value="five" disabled="disabled">Five</option>
         <option value="still learning how to count, apparently">Still learning how to count, apparently</option>
     </select>
 
@@ -64,6 +65,11 @@ There should be a form here:
 			<option id="multi_false_1" value="select_1">select_1</option>
 			<option id="multi_false_2" value="select_2">select_2</option>
 		</select>
+
+    <select name="multi_disabled" multiple="true">
+      <option id="multi_disabled_1" value="enabled">Enabled</option>
+      <option id="multi_disabled_2" value="disabled" disabled="disabled">Disabled</option>
+    </select>
 
     <select id="invisi_select" style="opacity:0;">
       <option selected value="apples">Apples</option>
