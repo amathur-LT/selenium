@@ -84,8 +84,7 @@ public class SelectElementTest extends JupiterTestBase {
     Select select = new Select(selectElement);
 
     assertThat(select.getOptions()).extracting(WebElement::getText)
-        .containsExactly("One", "Two", "Four", "Still learning how to count, apparently");
-
+        .containsExactly("One", "Two", "Four", "Five", "Still learning how to count, apparently");
   }
 
   @Test
