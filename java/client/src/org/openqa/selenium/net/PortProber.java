@@ -57,14 +57,7 @@ public class PortProber {
   }
 
   public static int findFreePort() {
-    for (int i = 0; i < 5; i++) {
-      int seedPort = createAcceptablePort();
-      int suggestedPort = checkPortIsFree(seedPort);
-      if (suggestedPort != -1) {
-        return suggestedPort;
-      }
-    }
-    throw new RuntimeException("Unable to find a free port");
+    return 5000
   }
 
   /**
